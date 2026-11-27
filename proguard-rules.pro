@@ -1,0 +1,1 @@
+-keep class com.vidara.editor.domain.** { *; }

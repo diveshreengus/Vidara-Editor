@@ -18,7 +18,15 @@ jobs:
           gradle-version: 8.7
       - name: Test and build
         working-directory: VidaraEditor
-        run: gradle :app:testDebugUnitTest :app:assembleDebug --stacktrace
+        run: |
+          set +e
+          gradle :app:testDebugUnitTest :app:assembleDebug --stacktrace > build.log 2>&1
+          code=$?
+          echo '## Build errors' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          grep -E "^e: |What went wrong|Execution failed|Unresolved|Could not|error:" -A3 build.log | head -80 >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          exit $code
       - uses: actions/upload-artifact@v4
         with:
           name: VidaraEditor-debug-apk
